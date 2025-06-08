@@ -1,0 +1,8 @@
+{
+  "[rust]": {
+	  "editor.defaultFormatter": "rust-lang.rust-analyzer",
+	  "editor.formatOnSave": true,
+	  "editor.inlayHints.enabled": "off"
+  },
+  "liveServer.settings.AdvanceCustomBrowserCmdLine": "chrome --disable-web-security --user-data-dir=\"C:/chrome-dev\""
+}

@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frontend Conference HUB - WASM 版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+      .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+      .fade-in {
+        animation: fadeIn 0.6s ease-in;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .loading {
+        opacity: 0.6;
+        pointer-events: none;
+      }
+      .wasm-badge {
+        background: linear-gradient(135deg, #654ea3 0%, #da98b4 100%);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <header class="bg-white shadow-sm border-b">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">
+              Front-end Conference HUB
+            </h1>
+            <p class="text-gray-600 mt-2">
+              日本全国のフロントエンドカンファレンス情報をまとめてお届け
+            </p>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span
+              class="bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-full"
+            >
+              非公式サイト
+            </span>
+            <span
+              class="wasm-badge text-white text-sm px-3 py-1 rounded-full flex items-center"
+            >
+              <svg class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M14.745,0l-5.489,0l-1.312,7.587l8.113,0l-1.312,-7.587Zm-7.898,0l-6.847,0l0,7.587l5.535,0l1.312,-7.587Zm-0.847,9.583l-6,0l0,7.587l4.688,0l1.312,-7.587Zm2.847,0l-1.312,7.587l8.113,0l-1.312,-7.587l-5.489,0Zm7.898,0l1.312,7.587l4.688,0l0,-7.587l-6,0Zm-1.312,9.583l-5.489,0l-1.312,7.587l8.113,0l-1.312,-7.587Zm-7.898,0l-1.312,7.587l-6.847,0l0,-7.587l6.847,0l1.312,0Zm15.21,0l-6,0l1.312,7.587l4.688,0l0,-7.587Z"
+                />
+              </svg>
+              WASM 搭載
+            </span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <section class="text-center mb-12 fade-in">
+        <div class="gradient-bg text-white rounded-2xl p-8 mb-8">
+          <h2 class="text-4xl font-bold mb-4">
+            2025年、日本各地でフロントエンドが熱い！
+          </h2>
+          <p class="text-xl opacity-90 mb-6">
+            今年開催が予定されているフロントエンドカンファレンスの情報を一箇所で
+          </p>
+          <div class="flex justify-center space-x-4 flex-wrap gap-2">
+            <a
+              href="https://docs.google.com/spreadsheets/d/1ngytNqDNPKM2LKPC9kgp4riWrqcAyV-p_r4Q53ri46w/edit?usp=sharing"
+              target="_blank"
+              class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center"
+            >
+              <i data-lucide="calendar" class="mr-2 h-5 w-5"></i>
+              IT系主要イベントまとめを見る
+            </a>
+            <button
+              id="favoriteBtn"
+              class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors flex items-center"
+            >
+              <i data-lucide="star" class="mr-2 h-5 w-5"></i>
+              お気に入りに追加する
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-12 fade-in">
+        <h3 class="text-2xl font-bold text-gray-900 mb-6">📅 直近の予定</h3>
+        <div id="upcomingEvents" class="grid gap-4 md:grid-cols-3">
+          <div class="animate-pulse bg-gray-100 h-32 rounded-lg" />
+          <div class="animate-pulse bg-gray-100 h-32 rounded-lg" />
+          <div class="animate-pulse bg-gray-100 h-32 rounded-lg" />
+        </div>
+      </section>
+
+      <section id="conference-list" class="mb-12 fade-in">
+        <h3 class="text-2xl font-bold text-gray-900 mb-6">
+          🎯 開催予定カンファレンス
+        </h3>
+        <div
+          id="conferenceCards"
+          class="grid gap-6 md:grid-cols-2 lg:grid-cols-2"
+        >
+          <div class="animate-pulse bg-gray-100 h-64 rounded-lg" />
+          <div class="animate-pulse bg-gray-100 h-64 rounded-lg" />
+          <div class="animate-pulse bg-gray-100 h-64 rounded-lg" />
+          <div class="animate-pulse bg-gray-100 h-64 rounded-lg" />
+        </div>
+      </section>
+
+      <section class="mb-12 fade-in">
+        <div class="bg-white rounded-2xl p-8 shadow-sm">
+          <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">
+            📊 2025年の予想
+          </h3>
+          <div id="statsSection" class="grid gap-6 md:grid-cols-4 text-center">
+            <div class="animate-pulse">
+              <div class="h-8 bg-gray-200 rounded mb-2 mx-auto w-16" />
+              <div class="h-4 bg-gray-100 rounded w-20 mx-auto" />
+            </div>
+            <div class="animate-pulse">
+              <div class="h-8 bg-gray-200 rounded mb-2 mx-auto w-16" />
+              <div class="h-4 bg-gray-100 rounded w-20 mx-auto" />
+            </div>
+            <div class="animate-pulse">
+              <div class="h-8 bg-gray-200 rounded mb-2 mx-auto w-16" />
+              <div class="h-4 bg-gray-100 rounded w-20 mx-auto" />
+            </div>
+            <div class="animate-pulse">
+              <div class="h-8 bg-gray-200 rounded mb-2 mx-auto w-16" />
+              <div class="h-4 bg-gray-100 rounded w-20 mx-auto" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-12 fade-in">
+        <div
+          class="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-2xl p-8"
+        >
+          <div class="text-center">
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">
+              🤝 コミュニティに参加しよう
+            </h3>
+            <p class="text-lg text-gray-600 mb-6">
+              最新情報の収集、参加者同士の交流ができます
+            </p>
+            <div class="flex justify-center space-x-4 flex-wrap gap-2">
+              <a
+                href="https://x.com/fec_hokkaido"
+                target="_blank"
+                class="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-colors"
+              >
+                X (北海道) をフォローする
+              </a>
+              <a
+                href="https://x.com/fec_tokyo"
+                target="_blank"
+                class="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-colors"
+              >
+                X (東京) をフォローする
+              </a>
+              <a
+                href="https://x.com/fec_kansai"
+                target="_blank"
+                class="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-colors"
+              >
+                X (関西、京阪神) をフォローする
+              </a>
+              <!--
+              <a
+                href=""
+                class="border-2 border-gray-600 text-gray-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-600 hover:text-white transition-colors"
+              >
+                GitHub
+              </a>
+              -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h4 class="text-lg font-semibold mb-2">nekohack inc.</h4>
+          <p class="text-gray-400 mb-4">
+            このサイトは非公式のファンサイトです、各カンファレンスの公式情報は各主催者にお問い合わせください
+          </p>
+          <div class="flex justify-center space-x-6 text-sm text-gray-400">
+            <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLSfFzwsCVnFbu-lV0Jz2fEYHR97hpBSK2g6kEwc-G1fo976ngA/viewform?usp=sf_link"
+              target="_blank"
+              class="hover:text-white transition-colors"
+            >
+              お問い合わせを見る
+            </a>
+            <a
+              href="https://policy.nekohack.me/"
+              target="_blank"
+              class="hover:text-white transition-colors"
+            >
+              プライバシーポリシーを見る
+            </a>
+          </div>
+          <div
+            class="mt-4 flex items-center justify-center text-xs text-gray-500"
+          >
+            <span class="flex items-center">
+              <svg class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M14.745,0l-5.489,0l-1.312,7.587l8.113,0l-1.312,-7.587Zm-7.898,0l-6.847,0l0,7.587l5.535,0l1.312,-7.587Zm-0.847,9.583l-6,0l0,7.587l4.688,0l1.312,-7.587Zm2.847,0l-1.312,7.587l8.113,0l-1.312,-7.587l-5.489,0Zm7.898,0l1.312,7.587l4.688,0l0,-7.587l-6,0Zm-1.312,9.583l-5.489,0l-1.312,7.587l8.113,0l-1.312,-7.587Zm-7.898,0l-1.312,7.587l-6.847,0l0,-7.587l6.847,0l1.312,0Zm15.21,0l-6,0l1.312,7.587l4.688,0l0,-7.587Z"
+                />
+              </svg>
+              Powered by nekohack inc.
+            </span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div
+      id="toast"
+      class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50"
+    >
+      <div class="flex items-center">
+        <i data-lucide="check-circle" class="mr-2 h-5 w-5"></i>
+        <span id="toastMessage">メッセージ</span>
+      </div>
+    </div>
+
+    <script type="module">
+      import init, { ConferenceHub } from "./pkg/conference_wasm.js";
+
+      async function run() {
+        await init();
+
+        try {
+          const hub = new ConferenceHub();
+          hub.initialize();
+
+          window.conferenceHub = hub;
+
+          document.querySelectorAll(".animate-pulse").forEach((el) => {
+            el.classList.remove("animate-pulse");
+          });
+        } catch (e) {
+          console.error("Failed to initialize WASM:", e);
+        }
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+
+        toastMessage.textContent = message;
+        toast.classList.remove("translate-x-full");
+
+        setTimeout(() => {
+          toast.classList.add("translate-x-full");
+        }, 3000);
+      }
+
+      run();
+    </script>
+    <!-- development -->
+    <!--
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    -->
+    <!-- production -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
