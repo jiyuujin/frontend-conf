@@ -128,6 +128,12 @@ impl ConferenceHub {
         event_type: "募集".to_string(),
       },
       UpcomingEvent {
+        title: "スポンサー募集開始".to_string(),
+        conference: "フロントエンドカンファレンス東京2025".to_string(),
+        date: "2025年6月11日".to_string(),
+        event_type: "募集".to_string(),
+      },
+      UpcomingEvent {
         title: "CfP募集開始".to_string(),
         conference: "フロントエンドカンファレンス関西2025".to_string(),
         date: "2025年6月27日".to_string(),
