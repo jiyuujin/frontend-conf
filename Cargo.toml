@@ -11,6 +11,7 @@ wasm-bindgen = "0.2.84"
 js-sys = "0.3.61"
 web-sys = { version = "0.3.61", features = [
   "Document",
+  "Storage",
   "Element",
   "HtmlElement",
   "MouseEvent",
