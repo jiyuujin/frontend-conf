@@ -3,7 +3,7 @@ use js_sys::{Array, Date, Object};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
-use web_sys::{window, Document, Element, HtmlElement};
+use web_sys::{console, window, Document, Element, HtmlElement, Storage};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Conference {
@@ -261,6 +261,7 @@ impl ConferenceHub {
                 <button
                   class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
                   data-conference-id="{}"
+                  data-action="calendar"
                 >
                   <i data-lucide="calendar-plus" class="mr-2 h-4 w-4"></i>
                   Googleカレンダーに追加する
@@ -323,16 +324,46 @@ impl ConferenceHub {
         }
       };
 
-      if let Some(id_str) = button.get_attribute("data-conference-id") {
-        if let Ok(id) = id_str.parse::<u32>() {
-          if let Some(conference) = conferences_clone.iter().find(|c| c.id == id) {
-            let calendar_url = generate_google_calendar_url(conference);
+      if let Some(action) = button.get_attribute("data-action") {
+        match action.as_str() {
+          "calendar" => {
+            if let Some(id_str) = button.get_attribute("data-conference-id") {
+              if let Ok(id) = id_str.parse::<u32>() {
+                if let Some(conference) = conferences_clone.iter().find(|c| c.id == id) {
+                  let calendar_url = generate_google_calendar_url(conference);
 
-            let window = window().unwrap();
-            window.open_with_url_and_target(&calendar_url, "_blank").unwrap();
+                  let window = window().unwrap();
+                  window.open_with_url_and_target(&calendar_url, "_blank").unwrap();
 
-            show_toast(&format!("{}をGoogleカレンダーに追加します", conference.name));
+                  show_toast(&format!("{}をGoogleカレンダーに追加します", conference.name));
+                }
+              }
+            }
           }
+          "favorite" => {
+            let window = window().unwrap();
+            let storage = window.local_storage().unwrap().unwrap();
+
+            // let existing = storage.get_item("favorites").unwrap();
+            // let favorites: Vec<u32> = if let Some(json) = existing {
+            //   serde_json::from_str(&json).unwrap_or(vec![])
+            // } else {
+            //   vec![]
+            // };
+
+            // let updated = serde_json::to_string(&favorites).unwrap();
+            let updated = Date::new_0().to_iso_string();
+            let updated_str = updated.as_string().unwrap_or_default();
+
+            let result = storage.set_item("favorites", &updated_str);
+            match result {
+              Ok(_) => console::log_1(&"保存に成功しました".into()),
+              Err(e) => console::log_1(&format!("保存に失敗しました: {:?}", e).into()),
+            }
+
+            show_toast("お気に入りに追加しました");
+          }
+          _ => {}
         }
       }
     }) as Box<dyn FnMut(_)>);
