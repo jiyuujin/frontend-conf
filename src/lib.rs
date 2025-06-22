@@ -261,6 +261,7 @@ impl ConferenceHub {
                 <button
                   class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
                   data-conference-id="{}"
+                  data-action="calendar"
                 >
                   <i data-lucide="calendar-plus" class="mr-2 h-4 w-4"></i>
                   Googleカレンダーに追加する
@@ -323,16 +324,23 @@ impl ConferenceHub {
         }
       };
 
-      if let Some(id_str) = button.get_attribute("data-conference-id") {
-        if let Ok(id) = id_str.parse::<u32>() {
-          if let Some(conference) = conferences_clone.iter().find(|c| c.id == id) {
-            let calendar_url = generate_google_calendar_url(conference);
+      if let Some(action) = button.get_attribute("data-action") {
+        match action.as_str() {
+          "calendar" => {
+            if let Some(id_str) = button.get_attribute("data-conference-id") {
+              if let Ok(id) = id_str.parse::<u32>() {
+                if let Some(conference) = conferences_clone.iter().find(|c| c.id == id) {
+                  let calendar_url = generate_google_calendar_url(conference);
 
-            let window = window().unwrap();
-            window.open_with_url_and_target(&calendar_url, "_blank").unwrap();
+                  let window = window().unwrap();
+                  window.open_with_url_and_target(&calendar_url, "_blank").unwrap();
 
-            show_toast(&format!("{}をGoogleカレンダーに追加します", conference.name));
+                  show_toast(&format!("{}をGoogleカレンダーに追加します", conference.name));
+                }
+              }
+            }
           }
+          _ => {}
         }
       }
     }) as Box<dyn FnMut(_)>);
